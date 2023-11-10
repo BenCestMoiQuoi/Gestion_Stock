@@ -29,9 +29,10 @@ Informations complaimentaire :
 
 
 Pour tout autres quesiton ou retour, se référer directement auprès de l'auteur
-    +33 7 68 02 46 86
-    roche.co86@gmail.com
+     - +33 7 68 02 46 86
+     - roche.co86@gmail.com
 
 
 L'équipe de développeur ;)
+
 @Coco'Corp
