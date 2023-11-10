@@ -4,9 +4,9 @@
 #                                   #
 #####################################
 
-path = 'Suivis_couture/'
+path = 'Gestion_Stock/'
 
-Nom_projet = 'Suivie de la couture'
+Nom_projet = 'Gestion du Stock'
 Nom_icon = f'{path}icone.ico'
 
 VAR_NULL = '-------'
