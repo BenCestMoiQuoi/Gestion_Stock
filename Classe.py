@@ -2,7 +2,7 @@ import tkinter as t
 from tkinter import ttk
 from functools import partial
 
-from Suivis_couture.Autre import *
+from Gestion_Stock.Autre import *
 
 #####################################
 #                                   #
@@ -158,7 +158,6 @@ class Page1(t.Frame):
         self.b_reorg.grid(row=2, column=3)
         self.b_quit.grid(row=3, column=4)
 
-
     def validation(self):
         if self.var_cestquoi.get() != VAR_NULL and self.var_param.get() != VAR_NULL:
             self.controlleur.change_page2()
@@ -282,7 +281,8 @@ class Page3(t.Frame):
             if i.get() != 0:
                 nb += 1
         return nb
-    
+
+
 class Page4(t.Frame):
     def __init__(self, parent, controlleur):
         t.Frame.__init__(self, parent)
@@ -373,7 +373,6 @@ class FrameStock(t.Frame):
 
 
 class Stock():
-
     def __init__(self, nom_stock="", param="", id="", stock=[]):
         self.id = id
         self.nom_stock = nom_stock
