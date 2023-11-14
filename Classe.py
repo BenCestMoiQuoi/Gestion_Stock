@@ -2,7 +2,7 @@ import tkinter as t
 from tkinter import ttk
 from functools import partial
 
-from Gestion_Stock.Autre import *
+from Suivis_couture.Autre import *
 
 #####################################
 #                                   #
@@ -19,6 +19,7 @@ class Fen(t.Tk):
 
         self.bind('<KeyPress-Escape>', self.keypress_enter)
         self.bind('<KeyPress-Return>', self.keypress_enter)
+        self.bind('<KeyPress-Up>', self.print_size)
 
 
         self.iconbitmap(Nom_icon)
@@ -38,19 +39,25 @@ class Fen(t.Tk):
 
         self.change_page1()
         self.mainloop()
+        self.resizable(False, False)
+
+    def print_size(self, key):
+        print(f'Largeur : {self.winfo_width()}\tHauteur : {self.winfo_height()}')
 
     def keypress_enter(self, key):
         if self.page == 1 and key.keysym == 'Return':
             self.change_page2()
         elif self.page == 1 and key.keysym == 'Escape':
             self.quit()
-        elif self.page == 2 and key.keysym == 'Escape':
+        elif key.keysym == 'Escape':
             self.change_page1()
+
 
     def change_page1(self):
         frame = self.frames[Page1]
         frame.ouverture_page()
         frame.tkraise()
+        self.geometry("872x162")
         self.page = 1
 
     def change_page2(self):
@@ -65,17 +72,27 @@ class Fen(t.Tk):
         frame.param = frame2.var_param.get()
         frame.ouverture_page()
         frame.tkraise()
+        self.geometry("855x206")
         self.page = 2
 
     def change_page3(self):
         frame = self.frames[Page3]
         frame.tkraise()
+        cestquoi = self.frames[Page1].var_cestquoi.get()
+        param = self.frames[Page1].var_param.get()
+        if cestquoi == VAR_NULL:
+            cestquoi = ''
+        if param == VAR_NULL:
+            param = ''
+        frame.ouverture_page(cestquoi, param)
+        self.geometry("619x203")
         self.page = 3
 
     def change_page4(self):
         frame = self.frames[Page4]
         frame.tkraise()
         frame.ouverture_page()
+        self.geometry("962x530")
         self.page = 4
 
     def quit(self):
@@ -105,24 +122,24 @@ class Fen(t.Tk):
 
 class Button(t.Button):
     def __init__(self, *args, **kwargs):
-        t.Button.__init__(self, *args, **kwargs)
+        t.Button.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
 class Entry(t.Button):
     def __init__(self, *args, **kwargs):
-        t.Entry.__init__(self, *args, **kwargs)
+        t.Entry.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
 class Label(t.Label):
     def __init__(self, *args, **kwargs):
-        t.Label.__init__(self, *args, **kwargs)
+        t.Label.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
 class Listbox(t.Listbox):
     def __init__(self, *args, **kwargs):
-        t.Listbox.__init__(self, *args, **kwargs)
+        t.Listbox.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
 class Checkbutton(t.Checkbutton):
     def __init__(self, *args, **kwargs):
-        t.Checkbutton.__init__(self, *args, **kwargs)
+        t.Checkbutton.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
         self.onvalue = 1
         self.offvalue = 0
 class Combobox(ttk.Combobox):
     def __init__(self, *args, **kwargs):
-        ttk.Combobox.__init__(self, *args, **kwargs)
+        ttk.Combobox.__init__(self, font=("Times New Roman", 16), *args, **kwargs)
 
 
 class Page1(t.Frame):
@@ -149,7 +166,7 @@ class Page1(t.Frame):
         self.var_cestquoi.set(VAR_NULL)
         self.var_param.set(VAR_NULL)
 
-        self.l_text.grid(row=0, column=0, columnspan=3)
+        self.l_text.grid(row=0, column=0, columnspan=4)
         self.c_cestquoi.grid(row=1, column=0)
         self.c_param.grid(row=1, column=2)
         self.b_valid.grid(row=2, column=2)
@@ -157,6 +174,7 @@ class Page1(t.Frame):
         self.b_invent.grid(row=2, column=0)
         self.b_reorg.grid(row=2, column=3)
         self.b_quit.grid(row=3, column=4)
+
 
     def validation(self):
         if self.var_cestquoi.get() != VAR_NULL and self.var_param.get() != VAR_NULL:
@@ -258,9 +276,10 @@ class Page3(t.Frame):
         self.c_cestquoi.bind('<<ComboboxSelected>>', f)
         self.controlleur.combobox_cestquoi(self)
 
-    def ouverture_page(self):
-        self.cestquoi.set("")
-        self.param.set("")
+    def ouverture_page(self, cestquoi, param):
+        self.stock = Stock('', '')
+        self.var_cestquoi.set(cestquoi)
+        self.var_param.set(param)
         for i in self.var:
             i.set(0)
 
@@ -281,8 +300,7 @@ class Page3(t.Frame):
             if i.get() != 0:
                 nb += 1
         return nb
-
-
+    
 class Page4(t.Frame):
     def __init__(self, parent, controlleur):
         t.Frame.__init__(self, parent)
@@ -301,7 +319,7 @@ class Page4(t.Frame):
 
         self.l_text.grid(row=0, column=0)
         self.list.grid(row=1, column=0)
-        self.b_quit.grid(row=2, column=1)
+        self.b_quit.grid(row=0, column=1)
 
     def ouverture_page(self):
         self.list.delete(0,t.END)
@@ -373,6 +391,7 @@ class FrameStock(t.Frame):
 
 
 class Stock():
+
     def __init__(self, nom_stock="", param="", id="", stock=[]):
         self.id = id
         self.nom_stock = nom_stock
