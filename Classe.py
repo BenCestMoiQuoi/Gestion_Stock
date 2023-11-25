@@ -2,7 +2,7 @@ import tkinter as t
 from tkinter import ttk
 from functools import partial
 
-from Suivis_couture.Autre import *
+from Gestion_Stock.Autre import *
 
 #####################################
 #                                   #
@@ -72,7 +72,7 @@ class Fen(t.Tk):
         frame.param = frame2.var_param.get()
         frame.ouverture_page()
         frame.tkraise()
-        self.geometry("855x206")
+        self.geometry("855x247")
         self.page = 2
 
     def change_page3(self):
@@ -190,7 +190,7 @@ class Page1(t.Frame):
 class Page2(t.Frame):
     def __init__(self, parent, controlleur):
         t.Frame.__init__(self, parent)
-        self.stock = Stock('', '')
+        self.stock = Stock(nom_stock="", param="", id="", stock=[])
 
         self.var_text = t.StringVar()
         self.var_text.set("")
@@ -207,11 +207,13 @@ class Page2(t.Frame):
         self.text = Label(self, textvariable=self.var_text)
         self.b = Button(self, text='Reset', command=lambda: self.reset())
         self.b_valid = Button(self, text='Validation', command=lambda: self.validation())
+        self.b_suppr = Button(self, text='Suppr', command=lambda: self.suppr_inv(controlleur))
         self.b_quit = Button(self, text='Retour', command=lambda: controlleur.change_page1())
         self.text.grid(row=0, column=0, columnspan=2)
         self.b.grid(row=1, column=1)
         self.b_valid.grid(row=2, column=1)
-        self.b_quit.grid(row=3, column=2)
+        self.b_suppr.grid(row=3, column=1)
+        self.b_quit.grid(row=4, column=2)
 
     def ouverture_page(self):
         self.var_text.set(f'Gestion du stock de {self.cestquoi} {self.param}')
@@ -237,12 +239,16 @@ class Page2(t.Frame):
             self.stock.stock[i] = self.frames[self.stock.nb].var[i].get()
         self.stock.modif_line()
 
+    def suppr_inv(self, controlleur):
+        self.stock.suppr_line()
+        controlleur.change_page1()
+
 
 class Page3(t.Frame):
     def __init__(self, parent, controlleur):
         t.Frame.__init__(self, parent)
         self.controlleur = controlleur
-        self.stock = Stock('', '')
+        self.stock = Stock(nom_stock="", param="", id="", stock=[])
 
         self.var_cestquoi = t.StringVar()
         self.var_param = t.StringVar()
@@ -277,7 +283,7 @@ class Page3(t.Frame):
         self.controlleur.combobox_cestquoi(self)
 
     def ouverture_page(self, cestquoi, param):
-        self.stock = Stock('', '')
+        self.stock = Stock(nom_stock="", param="", id="", stock=[])
         self.var_cestquoi.set(cestquoi)
         self.var_param.set(param)
         for i in self.var:
@@ -306,6 +312,7 @@ class Page4(t.Frame):
         t.Frame.__init__(self, parent)
         self.controlleur = controlleur
         self.stocks = []
+        self.id_list = []
 
         self.var_cestquoi = t.StringVar()
         self.var_param = t.StringVar()
@@ -325,12 +332,14 @@ class Page4(t.Frame):
         self.list.delete(0,t.END)
         f = open(NOM_FILE, 'r')
         self.stocks = []
+        self.id_list = []
         for line in f:
             line = line.split(';')
             stock = []
             for i in range(len(line[3:-1])):
                 stock.append(int(line[i+3]))
             s = Stock(line[1], line[2], line[0], stock)
+            self.id_list.append(line[0])
             s.read_line()
             self.stocks.append(s)
 
@@ -340,7 +349,7 @@ class Page4(t.Frame):
 
     def select_stock(self, event):
         a = self.list.curselection()
-        id = str(a[0])
+        id = self.id_list[a[0]]
 
         f = open(NOM_FILE, 'r')
         line = f.readlines()
@@ -438,13 +447,25 @@ class Stock():
         f.writelines(line_id)
         f.close()
 
+    def suppr_line(self):
+        f = open(NOM_FILE, 'r')
+        lines = f.readlines()
+        f.close()
+
+        f = open(NOM_FILE, 'w')
+        for i in lines:
+            if i.split(';')[0] != self.id:
+                f.writelines(i)
+        f.close()
+
     def new_id(self):
         nb = 0
         f = open(NOM_FILE, 'r')
         for i in f:
             i = i.split(';')
-            if int(i[0]) >= nb:
-                nb = int(i[0])+1
+            if len(i) != 1:
+                if int(i[0]) >= nb:
+                    nb = int(i[0])+1
         f.close()
         self.id = nb
 
