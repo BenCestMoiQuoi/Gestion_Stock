@@ -37,7 +37,6 @@ def reorganiser():
             if t2_s[1] < alpha_s[1] or t2_s[1] == alpha_s[1] and t2_s[2] < alpha_s[2]:
                 alpha_s = t2_s
                 l_para = j
-        alpha_s[0] = f'{i}'
         alpha = ''
         for k in alpha_s:
             alpha += f'{k}'
